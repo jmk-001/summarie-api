@@ -1,0 +1,14 @@
+services:
+  dev-db:
+    image: postgres:16
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+
+  test-db:
+    image: postgres:16
+    ports:
+      - 5433:5432
+    env_file:
+      - .env.test
