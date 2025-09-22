@@ -5,6 +5,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { GraphQLModule } from '@nestjs/graphql';
 import { GqlConfigService } from './gql-config.service';
 import { UserModule } from './user/user.module';
+import { DocumentModule } from './document/document.module';
 
 @Module({
   imports: [
@@ -16,6 +17,8 @@ import { UserModule } from './user/user.module';
     }),
 
     UserModule,
+
+    DocumentModule,
   ],
 })
 export class AppModule {}
