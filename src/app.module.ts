@@ -6,6 +6,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { GqlConfigService } from './gql-config.service';
 import { UserModule } from './user/user.module';
 import { DocumentModule } from './document/document.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -16,8 +17,8 @@ import { DocumentModule } from './document/document.module';
       useClass: GqlConfigService,
     }),
 
+    AuthModule,
     UserModule,
-
     DocumentModule,
   ],
 })
