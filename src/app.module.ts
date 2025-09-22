@@ -7,6 +7,7 @@ import { GqlConfigService } from './gql-config.service';
 import { UserModule } from './user/user.module';
 import { DocumentModule } from './document/document.module';
 import { AuthModule } from './auth/auth.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from './auth/auth.module';
     AuthModule,
     UserModule,
     DocumentModule,
+    PrismaModule,
   ],
 })
 export class AppModule {}
