@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output = "../node_modules/.prisma/client"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -11,11 +11,13 @@ datasource db {
 model User {
   id            String    @id @default(cuid())
   createdAt     DateTime  @default(now())
-  
+
   email         String    @unique
   passwordHash  String
 
   documents     Document[]
+  promptPresets PromptPreset[] @relation("UserToPreset")
+  summaryJobs   SummaryJob[]   @relation("UserToJob")
 }
 
 model Document {
@@ -23,12 +25,82 @@ model Document {
   userId        String?
   user          User?     @relation(fields: [userId], references: [id])
   createdAt     DateTime  @default(now())
-  
+
   title         String
   content       String
 
   sourceType    String
   sourceUrl     String?
+
+  summaryJobs   SummaryJob[] @relation("DocumentToJob")
+}
+
+model PromptPreset {
+  id            String     @id @default(cuid())
+  ownerId       String
+  owner         User       @relation("UserToPreset", fields: [ownerId], references: [id])
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  name          String
+  description   String?
+
+  schemaVersion Int        @default(1)
+  params        Json
+
+  visibility    PromptVisibility @default(private)
+
+  jobs          SummaryJob[] @relation("PresetToJob")
+
+  @@index([createdAt])
+  @@index([name])
+}
+
+model SummaryJob {
+  id             String    @id @default(cuid())
+  userId         String?
+  user           User?     @relation("UserToJob", fields: [userId], references: [id])
+
+  documentId     String
+  document       Document  @relation("DocumentToJob", fields: [documentId], references: [id])
+
+  createdAt      DateTime  @default(now())
+  startedAt      DateTime?
+  finishedAt     DateTime?
+  status         SummaryJobStatus @default(queued)
+  error          String?
+  attempts       Int       @default(0)
+  idempotencyKey String?   @unique
+
+  presetId       String?
+  preset         PromptPreset? @relation("PresetToJob", fields: [presetId], references: [id])
+
+  schemaVersion  Int
+  paramsSnapshot Json
+
+  result         SummaryResult? @relation("JobToResult")
+
+  @@index([status, createdAt])
+  @@index([userId, createdAt])
+  @@index([presetId])
+}
+
+model SummaryResult {
+  id            String    @id @default(cuid())
+
+  jobId         String    @unique
+  job           SummaryJob @relation("JobToResult", fields: [jobId], references: [id])
+
+  createdAt     DateTime  @default(now())
+  content       String
+  tokensUsed    Int
+  model         Models
+}
+
+enum PromptVisibility {
+  private
+  organization
+  public
 }
 
 enum SummaryJobStatus {
@@ -38,33 +110,10 @@ enum SummaryJobStatus {
   error
 }
 
-model SummaryJob {
-  id            String    @id @default(cuid())
-  userId        String?
-  documentId    String
-  createdAt     DateTime  @default(now())
-
-  startedAt     DateTime?
-  finishedAt    DateTime?
-  error         String?
-
-  status        SummaryJobStatus
-  params        Json
-}
-
 enum Models {
+  gpt_mock
   gpt_3_5_turbo
   gpt_3_5_turbo_16k
   gpt_4o_mini
   gpt_4o_mini_2024_07_18
-}
-
-model SummaryResult {
-  id            String    @id @default(cuid())
-  jobId         String?
-  createdAt     DateTime  @default(now())
-
-  content       String
-  tokensUsed    Int
-  model         Models
 }
