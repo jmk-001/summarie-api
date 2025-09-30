@@ -32,6 +32,6 @@ export class DocumentService {
       where: { id: documentId, userId: currentUserId },
     });
     if (deleted.count == 0) throw new NotFoundException('Document not found');
-    return { id: documentId, ok: true };
+    return documentId;
   }
 }

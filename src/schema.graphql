@@ -2,6 +2,13 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input CreateDocumentInput {
+  content: String!
+  sourceType: String!
+  sourceUrl: String
+  title: String!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -19,10 +26,13 @@ type Document {
 }
 
 type Mutation {
+  createDocument(data: CreateDocumentInput!): Document!
+  deleteDocument(id: ID!): ID!
   updateUser(data: UpdateUserInput!, userId: String!): User!
 }
 
 type Query {
+  document(id: String!): Document
   user(userId: String!): User
 }
 
