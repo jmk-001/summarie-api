@@ -19,7 +19,7 @@ export class DocumentResolver {
     return this.documentService.createDocument(user.id, data);
   }
 
-  @Query(() => Document, { name: 'document' })
+  @Query(() => [Document], { name: 'document' })
   async getDocuments(@CurrentUser() user: { id: string }) {
     return this.documentService.getDocuments(user.id);
   }
