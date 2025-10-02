@@ -9,6 +9,7 @@ import { DocumentModule } from './document/document.module';
 import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PromptPresetModule } from './prompt-preset/prompt-preset.module';
+import { SummaryJobModule } from './summary-job/summary-job.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PromptPresetModule } from './prompt-preset/prompt-preset.module';
     DocumentModule,
     PrismaModule,
     PromptPresetModule,
+    SummaryJobModule,
   ],
 })
 export class AppModule {}
