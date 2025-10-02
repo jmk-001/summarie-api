@@ -9,6 +9,14 @@ input CreateDocumentInput {
   title: String!
 }
 
+input CreatePromptPresetInput {
+  description: String
+  name: String!
+  params: JSON!
+  schemaVersion: Int!
+  visibility: PromptVisibility!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -25,15 +33,54 @@ type Document {
   title: String!
 }
 
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
 type Mutation {
   createDocument(data: CreateDocumentInput!): Document!
+  createPromptPreset(data: CreatePromptPresetInput!): PromptPreset!
   deleteDocument(id: ID!): ID!
+  deletePromptPresetById(id: String!): ID!
+  updatePromptPreset(data: UpdatePromptPresetInput!): PromptPreset!
   updateUser(data: UpdateUserInput!, userId: String!): User!
+}
+
+type PromptPreset {
+  """Identifies the date and time when the object was created."""
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  name: String!
+  ownerId: String!
+  params: JSON!
+  schemaVersion: Int!
+  updatedAt: DateTime!
+  visibility: PromptVisibility!
+}
+
+enum PromptVisibility {
+  organization
+  private
+  public
 }
 
 type Query {
   document(id: String!): Document
+  documents: [Document!]!
+  promptPreset(id: String!): PromptPreset!
+  promptPresets: [PromptPreset!]!
   user(userId: String!): User
+}
+
+input UpdatePromptPresetInput {
+  description: String
+  id: ID!
+  name: String!
+  params: JSON!
+  schemaVersion: Int!
+  visibility: PromptVisibility!
 }
 
 input UpdateUserInput {

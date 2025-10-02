@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { DocumentModule } from './document/document.module';
 import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { PromptPresetModule } from './prompt-preset/prompt-preset.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { PrismaModule } from './prisma/prisma.module';
     UserModule,
     DocumentModule,
     PrismaModule,
+    PromptPresetModule,
   ],
 })
 export class AppModule {}
