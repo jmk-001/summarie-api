@@ -1,20 +1,9 @@
-import {
-  Field,
-  GraphQLISODateTime,
-  HideField,
-  ID,
-  ObjectType,
-} from '@nestjs/graphql';
+import { Field, HideField, ObjectType } from '@nestjs/graphql';
 import { Document } from '../../document/models/document.model';
+import { BaseModel } from '../../common/models/base.model';
 
 @ObjectType()
-export class User {
-  @Field(() => ID)
-  id: string;
-
-  @Field(() => GraphQLISODateTime)
-  createdAt: Date;
-
+export class User extends BaseModel {
   @Field(() => String)
   email: string;
 

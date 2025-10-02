@@ -1,19 +1,8 @@
-import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { GraphQLJSON } from 'graphql-type-json';
-import { GraphQLScalarType } from 'graphql';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { GraphQLISODateTime } from '@nestjs/graphql';
 import { BaseModel } from '../../common/models/base.model';
-import { Prisma } from '@prisma/client';
-
-export const GraphQLJSONScalar: GraphQLScalarType<unknown, unknown> =
-  GraphQLJSON;
-
-export enum PromptVisibility {
-  private = 'private',
-  organization = 'organization',
-  public = 'public',
-}
-registerEnumType(PromptVisibility, { name: 'PromptVisibility' });
+import { Prisma, PromptVisibility } from '@prisma/client';
+import { GraphQLJSONScalar } from '../../common/types';
 
 @ObjectType()
 export class PromptPreset extends BaseModel {
