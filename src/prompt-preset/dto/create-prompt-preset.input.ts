@@ -8,11 +8,9 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
-import {
-  GraphQLJSONScalar,
-  PromptVisibility,
-} from '../models/prompt-preset.model';
 import { Prisma } from '@prisma/client';
+import { GraphQLJSONScalar } from '../../common/types';
+import { PromptVisibility } from '../models/prompt-visibility.enum';
 
 @InputType('CreatePromptPresetInput')
 export class CreatePromptPresetInput {

@@ -1,8 +1,9 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { GraphQLISODateTime } from '@nestjs/graphql';
 import { BaseModel } from '../../common/models/base.model';
-import { Prisma, PromptVisibility } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { GraphQLJSONScalar } from '../../common/types';
+import { PromptVisibility } from './prompt-visibility.enum';
 
 @ObjectType()
 export class PromptPreset extends BaseModel {

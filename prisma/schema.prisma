@@ -84,6 +84,7 @@ model SummaryJob {
   @@index([status, createdAt])
   @@index([userId, createdAt])
   @@index([presetId])
+  @@unique([userId, idempotencyKey])
 }
 
 model SummaryResult {
