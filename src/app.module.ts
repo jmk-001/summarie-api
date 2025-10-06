@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PromptPresetModule } from './prompt-preset/prompt-preset.module';
 import { SummaryJobModule } from './summary-job/summary-job.module';
+import { SummaryResultModule } from './summary-result/summary-result.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { SummaryJobModule } from './summary-job/summary-job.module';
     PrismaModule,
     PromptPresetModule,
     SummaryJobModule,
+    SummaryResultModule,
   ],
 })
 export class AppModule {}
