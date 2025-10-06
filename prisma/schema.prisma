@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -16,8 +15,9 @@ model User {
   passwordHash  String
 
   documents     Document[]
-  promptPresets PromptPreset[] @relation("UserToPreset")
-  summaryJobs   SummaryJob[]   @relation("UserToJob")
+  promptPresets PromptPreset[]
+  summaryJobs   SummaryJob[]
+  results       SummaryResult[]
 }
 
 model Document {
@@ -32,13 +32,13 @@ model Document {
   sourceType    String
   sourceUrl     String?
 
-  summaryJobs   SummaryJob[] @relation("DocumentToJob")
+  summaryJobs   SummaryJob[]
 }
 
 model PromptPreset {
   id            String     @id @default(cuid())
   ownerId       String
-  owner         User       @relation("UserToPreset", fields: [ownerId], references: [id])
+  owner         User       @relation(fields: [ownerId], references: [id])
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 
@@ -50,7 +50,7 @@ model PromptPreset {
 
   visibility    PromptVisibility @default(private)
 
-  jobs          SummaryJob[] @relation("PresetToJob")
+  jobs          SummaryJob[]
 
   @@index([createdAt])
   @@index([name])
@@ -59,10 +59,10 @@ model PromptPreset {
 model SummaryJob {
   id             String    @id @default(cuid())
   userId         String?
-  user           User?     @relation("UserToJob", fields: [userId], references: [id])
+  user           User?     @relation(fields: [userId], references: [id])
 
   documentId     String
-  document       Document  @relation("DocumentToJob", fields: [documentId], references: [id])
+  document       Document  @relation(fields: [documentId], references: [id])
   model          String    @default("gpt-mock")
 
   createdAt      DateTime  @default(now())
@@ -74,12 +74,12 @@ model SummaryJob {
   idempotencyKey String?   @unique
 
   presetId       String?
-  preset         PromptPreset? @relation("PresetToJob", fields: [presetId], references: [id])
+  preset         PromptPreset? @relation(fields: [presetId], references: [id])
 
   schemaVersion  Int
   paramsSnapshot Json
 
-  result         SummaryResult? @relation("JobToResult")
+  result         SummaryResult?
 
   @@index([status, createdAt])
   @@index([userId, createdAt])
@@ -88,15 +88,17 @@ model SummaryJob {
 }
 
 model SummaryResult {
-  id            String    @id @default(cuid())
+  id              String    @id @default(cuid())
+  userId          String?
+  user            User?     @relation(fields: [userId], references: [id])
 
-  jobId         String    @unique
-  job           SummaryJob @relation("JobToResult", fields: [jobId], references: [id])
+  jobId           String    @unique
+  job             SummaryJob @relation(fields: [jobId], references: [id])
 
-  createdAt     DateTime  @default(now())
-  content       String
-  tokensUsed    Int
-  model         String    @default("gpt-mock")
+  createdAt       DateTime  @default(now())
+  content         String
+  tokensUsed      Int
+  model           String    @default("gpt-mock")
 }
 
 enum PromptVisibility {
