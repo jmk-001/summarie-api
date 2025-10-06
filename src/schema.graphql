@@ -17,6 +17,14 @@ input CreatePromptPresetInput {
   visibility: PromptVisibility!
 }
 
+input CreateSummaryJobInput {
+  documentId: String!
+  idempotencyKey: String
+  model: String!
+  paramsSnapshot: JSON!
+  schemaVersion: Int!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -24,8 +32,6 @@ scalar DateTime
 
 type Document {
   content: String!
-
-  """Identifies the date and time when the object was created."""
   createdAt: DateTime!
   id: ID!
   sourceType: String!
@@ -41,14 +47,15 @@ scalar JSON
 type Mutation {
   createDocument(data: CreateDocumentInput!): Document!
   createPromptPreset(data: CreatePromptPresetInput!): PromptPreset!
+  createSummaryJob(data: CreateSummaryJobInput!): SummaryJob!
   deleteDocument(id: ID!): ID!
   deletePromptPresetById(id: String!): ID!
+  deleteSummaryJobById(id: String!): String!
   updatePromptPreset(data: UpdatePromptPresetInput!): PromptPreset!
   updateUser(data: UpdateUserInput!, userId: String!): User!
 }
 
 type PromptPreset {
-  """Identifies the date and time when the object was created."""
   createdAt: DateTime!
   description: String
   id: ID!
@@ -71,7 +78,32 @@ type Query {
   documents: [Document!]!
   promptPreset(id: String!): PromptPreset!
   promptPresets: [PromptPreset!]!
+  summaryJob(id: String!): SummaryJob!
+  summaryJobs: [SummaryJob!]!
   user(userId: String!): User
+}
+
+type SummaryJob {
+  attempts: Int!
+  createdAt: DateTime!
+  documentId: String!
+  error: String
+  finishedAt: DateTime
+  id: ID!
+  idempotencyKey: String
+  model: String!
+  paramsSnapshot: JSON!
+  schemaVersion: Int!
+  startedAt: DateTime
+  status: SummaryJobStatus!
+  userId: String!
+}
+
+enum SummaryJobStatus {
+  done
+  error
+  queued
+  running
 }
 
 input UpdatePromptPresetInput {
