@@ -1,31 +1,31 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `params` on the `SummaryJob` table. All the data in the column will be lost.
-  - A unique constraint covering the columns `[idempotencyKey]` on the table `SummaryJob` will be added. If there are existing duplicate values, this will fail.
-  - A unique constraint covering the columns `[jobId]` on the table `SummaryResult` will be added. If there are existing duplicate values, this will fail.
-  - Added the required column `paramsSnapshot` to the `SummaryJob` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `schemaVersion` to the `SummaryJob` table without a default value. This is not possible if the table is not empty.
-  - Made the column `jobId` on table `SummaryResult` required. This step will fail if there are existing NULL values in that column.
-
-*/
 -- CreateEnum
 CREATE TYPE "example"."PromptVisibility" AS ENUM ('private', 'organization', 'public');
 
--- AlterEnum
-ALTER TYPE "example"."Models" ADD VALUE 'gpt_mock';
+-- CreateEnum
+CREATE TYPE "example"."SummaryJobStatus" AS ENUM ('queued', 'running', 'done', 'error');
 
--- AlterTable
-ALTER TABLE "example"."SummaryJob" DROP COLUMN "params",
-ADD COLUMN     "attempts" INTEGER NOT NULL DEFAULT 0,
-ADD COLUMN     "idempotencyKey" TEXT,
-ADD COLUMN     "paramsSnapshot" JSONB NOT NULL,
-ADD COLUMN     "presetId" TEXT,
-ADD COLUMN     "schemaVersion" INTEGER NOT NULL,
-ALTER COLUMN "status" SET DEFAULT 'queued';
+-- CreateTable
+CREATE TABLE "example"."User" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "email" TEXT NOT NULL,
+    "passwordHash" TEXT NOT NULL,
 
--- AlterTable
-ALTER TABLE "example"."SummaryResult" ALTER COLUMN "jobId" SET NOT NULL;
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "example"."Document" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "title" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "sourceType" TEXT NOT NULL,
+    "sourceUrl" TEXT,
+
+    CONSTRAINT "Document_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "example"."PromptPreset" (
@@ -41,6 +41,42 @@ CREATE TABLE "example"."PromptPreset" (
 
     CONSTRAINT "PromptPreset_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateTable
+CREATE TABLE "example"."SummaryJob" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT,
+    "documentId" TEXT NOT NULL,
+    "model" TEXT NOT NULL DEFAULT 'gpt-mock',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "startedAt" TIMESTAMP(3),
+    "finishedAt" TIMESTAMP(3),
+    "status" "example"."SummaryJobStatus" NOT NULL DEFAULT 'queued',
+    "error" TEXT,
+    "attempts" INTEGER NOT NULL DEFAULT 0,
+    "idempotencyKey" TEXT,
+    "presetId" TEXT,
+    "schemaVersion" INTEGER NOT NULL,
+    "paramsSnapshot" JSONB NOT NULL,
+
+    CONSTRAINT "SummaryJob_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "example"."SummaryResult" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT,
+    "jobId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "content" TEXT NOT NULL,
+    "tokensUsed" INTEGER NOT NULL,
+    "model" TEXT NOT NULL DEFAULT 'gpt-mock',
+
+    CONSTRAINT "SummaryResult_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "example"."User"("email");
 
 -- CreateIndex
 CREATE INDEX "PromptPreset_createdAt_idx" ON "example"."PromptPreset"("createdAt");
@@ -61,7 +97,13 @@ CREATE INDEX "SummaryJob_userId_createdAt_idx" ON "example"."SummaryJob"("userId
 CREATE INDEX "SummaryJob_presetId_idx" ON "example"."SummaryJob"("presetId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "SummaryJob_userId_idempotencyKey_key" ON "example"."SummaryJob"("userId", "idempotencyKey");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "SummaryResult_jobId_key" ON "example"."SummaryResult"("jobId");
+
+-- AddForeignKey
+ALTER TABLE "example"."Document" ADD CONSTRAINT "Document_userId_fkey" FOREIGN KEY ("userId") REFERENCES "example"."User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "example"."PromptPreset" ADD CONSTRAINT "PromptPreset_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "example"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
