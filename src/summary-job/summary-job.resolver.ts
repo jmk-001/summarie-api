@@ -1,10 +1,13 @@
+import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { SummaryJob } from './models/summary-job.model';
 import { SummaryJobService } from './summary-job.service';
+import { GqlAuthGuard } from '../auth/guard/gql-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { CreateSummaryJobInput } from './dto';
 
 @Resolver()
+@UseGuards(GqlAuthGuard)
 export class SummaryJobResolver {
   constructor(private summaryJobService: SummaryJobService) {}
 
@@ -13,20 +16,20 @@ export class SummaryJobResolver {
     @CurrentUser() user: { id: string },
     @Args('data') data: CreateSummaryJobInput,
   ) {
-    return this.summaryJobService.createSummaryJob(user.id, data);
+    return this.summaryJobService.createForUser(user.id, data);
   }
 
   @Query(() => [SummaryJob], { name: 'summaryJobs' })
-  async getSummaryJobs(@CurrentUser() user: { id: string }) {
-    return this.summaryJobService.getSummaryJobs(user.id);
+  async findSummaryJobs(@CurrentUser() user: { id: string }) {
+    return this.summaryJobService.findManyForUser(user.id);
   }
 
   @Query(() => SummaryJob, { name: 'summaryJob' })
-  async getSummaryJobById(
+  async findSummaryJobById(
     @CurrentUser() user: { id: string },
     @Args('id') id: string,
   ) {
-    return this.summaryJobService.getSummaryJobById(user.id, id);
+    return this.summaryJobService.findForUser(user.id, id);
   }
 
   @Mutation(() => String)
@@ -34,6 +37,6 @@ export class SummaryJobResolver {
     @CurrentUser() user: { id: string },
     @Args('id') id: string,
   ) {
-    return this.summaryJobService.deleteSummaryJobById(user.id, id);
+    return this.summaryJobService.deleteForUser(user.id, id);
   }
 }

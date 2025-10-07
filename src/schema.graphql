@@ -25,6 +25,13 @@ input CreateSummaryJobInput {
   schemaVersion: Int!
 }
 
+input CreateSummaryResultInput {
+  content: String!
+  jobId: String!
+  model: String!
+  tokensUsed: Int!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -46,9 +53,11 @@ scalar JSON
 
 type Mutation {
   createDocument(data: CreateDocumentInput!): Document!
+  createForUser(data: CreateSummaryResultInput!): SummaryResult!
   createPromptPreset(data: CreatePromptPresetInput!): PromptPreset!
   createSummaryJob(data: CreateSummaryJobInput!): SummaryJob!
   deleteDocument(id: ID!): ID!
+  deleteForUser(id: String!): String!
   deletePromptPresetById(id: String!): ID!
   deleteSummaryJobById(id: String!): String!
   updatePromptPreset(data: UpdatePromptPresetInput!): PromptPreset!
@@ -80,6 +89,8 @@ type Query {
   promptPresets: [PromptPreset!]!
   summaryJob(id: String!): SummaryJob!
   summaryJobs: [SummaryJob!]!
+  summaryResult(id: String!): SummaryResult!
+  summaryResults: [SummaryResult!]!
   user(userId: String!): User
 }
 
@@ -104,6 +115,16 @@ enum SummaryJobStatus {
   error
   queued
   running
+}
+
+type SummaryResult {
+  content: String!
+  createdAt: DateTime!
+  id: ID!
+  jobId: String!
+  model: String!
+  tokensUsed: Int!
+  userId: String!
 }
 
 input UpdatePromptPresetInput {

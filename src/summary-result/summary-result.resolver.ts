@@ -10,31 +10,31 @@ export class SummaryResultResolver {
   constructor(private summaryResultService: SummaryResultService) {}
 
   @Mutation(() => SummaryResult)
-  async createSummaryResult(
+  async createForUser(
     @CurrentUser() user: { id: string },
     @Args('data') data: CreateSummaryResultInput,
   ) {
-    return this.summaryResultService.createSummaryResult(user.id, data);
+    return this.summaryResultService.createForUser(user.id, data);
   }
 
   @Query(() => [SummaryResult], { name: 'summaryResults' })
-  async getSummaryResults(@CurrentUser() user: { id: string }) {
-    return this.summaryResultService.getSummaryResults(user.id);
+  async findManyForUser(@CurrentUser() user: { id: string }) {
+    return this.summaryResultService.findManyForUser(user.id);
   }
 
   @Query(() => SummaryResult, { name: 'summaryResult' })
-  async getSummaryResultById(
+  async findForUser(
     @CurrentUser() user: { id: string },
     @Args('id') id: string,
   ) {
-    return this.summaryResultService.getSummaryResultById(user.id, id);
+    return this.summaryResultService.findForUser(user.id, id);
   }
 
   @Mutation(() => String)
-  async deleteSummaryResultById(
+  async deleteForUser(
     @CurrentUser() user: { id: string },
     @Args('id') id: string,
   ) {
-    return this.summaryResultService.deleteSummaryResultById(user.id, id);
+    return this.summaryResultService.deleteForUser(user.id, id);
   }
 }
