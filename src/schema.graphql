@@ -53,13 +53,13 @@ scalar JSON
 
 type Mutation {
   createDocument(data: CreateDocumentInput!): Document!
-  createForUser(data: CreateSummaryResultInput!): SummaryResult!
   createPromptPreset(data: CreatePromptPresetInput!): PromptPreset!
   createSummaryJob(data: CreateSummaryJobInput!): SummaryJob!
+  createSummaryResult(data: CreateSummaryResultInput!): SummaryResult!
   deleteDocument(id: ID!): ID!
-  deleteForUser(id: String!): String!
   deletePromptPresetById(id: String!): ID!
   deleteSummaryJobById(id: String!): String!
+  deleteSummaryResult(id: String!): String!
   updatePromptPreset(data: UpdatePromptPresetInput!): PromptPreset!
   updateUser(data: UpdateUserInput!, userId: String!): User!
 }

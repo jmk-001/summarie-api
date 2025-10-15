@@ -28,7 +28,7 @@ export class SummaryProcessor implements OnModuleInit {
       });
 
       try {
-        const existing = await this.summaryResultService.findById(job.id);
+        const existing = await this.summaryResultService.findByJobId(job.id);
         if (existing) {
           this.logger.warn(`Job ${j.id} already has a result. Skipping.`);
           await this.summaryJobService.updateById(job.id, {
@@ -40,7 +40,7 @@ export class SummaryProcessor implements OnModuleInit {
 
         const llmOutput = await this.llm.run(job.paramsSnapshot);
 
-        await this.summaryResultService.createForUser(job.userId, {
+        await this.summaryResultService.createSummaryResult(job.userId, {
           jobId: job.id,
           content: llmOutput.content,
           model: job.model,

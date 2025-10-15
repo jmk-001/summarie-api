@@ -26,8 +26,8 @@ export class SummaryResultService {
     return result;
   }
 
-  async findById(id: string) {
-    return this.prisma.summaryResult.findUnique({ where: { id } });
+  async findByJobId(id: string) {
+    return this.prisma.summaryResult.findUnique({ where: { jobId: id } });
   }
 
   async deleteSummaryResult(userId: string, id: string) {
