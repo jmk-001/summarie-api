@@ -74,6 +74,5 @@ export class SummaryProcessor implements OnModuleInit {
         throw e;
       }
     });
-    console.log('Worker registered');
   }
 }

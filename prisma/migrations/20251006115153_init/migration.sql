@@ -1,11 +1,11 @@
 -- CreateEnum
-CREATE TYPE "example"."PromptVisibility" AS ENUM ('private', 'organization', 'public');
+CREATE TYPE "public"."PromptVisibility" AS ENUM ('private', 'organization', 'public');
 
 -- CreateEnum
-CREATE TYPE "example"."SummaryJobStatus" AS ENUM ('queued', 'running', 'done', 'error');
+CREATE TYPE "public"."SummaryJobStatus" AS ENUM ('queued', 'running', 'done', 'error');
 
 -- CreateTable
-CREATE TABLE "example"."User" (
+CREATE TABLE "public"."User" (
     "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "email" TEXT NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE "example"."User" (
 );
 
 -- CreateTable
-CREATE TABLE "example"."Document" (
+CREATE TABLE "public"."Document" (
     "id" TEXT NOT NULL,
     "userId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -28,7 +28,7 @@ CREATE TABLE "example"."Document" (
 );
 
 -- CreateTable
-CREATE TABLE "example"."PromptPreset" (
+CREATE TABLE "public"."PromptPreset" (
     "id" TEXT NOT NULL,
     "ownerId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -37,13 +37,13 @@ CREATE TABLE "example"."PromptPreset" (
     "description" TEXT,
     "schemaVersion" INTEGER NOT NULL DEFAULT 1,
     "params" JSONB NOT NULL,
-    "visibility" "example"."PromptVisibility" NOT NULL DEFAULT 'private',
+    "visibility" "public"."PromptVisibility" NOT NULL DEFAULT 'private',
 
     CONSTRAINT "PromptPreset_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "example"."SummaryJob" (
+CREATE TABLE "public"."SummaryJob" (
     "id" TEXT NOT NULL,
     "userId" TEXT,
     "documentId" TEXT NOT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE "example"."SummaryJob" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "startedAt" TIMESTAMP(3),
     "finishedAt" TIMESTAMP(3),
-    "status" "example"."SummaryJobStatus" NOT NULL DEFAULT 'queued',
+    "status" "public"."SummaryJobStatus" NOT NULL DEFAULT 'queued',
     "error" TEXT,
     "attempts" INTEGER NOT NULL DEFAULT 0,
     "idempotencyKey" TEXT,
@@ -63,7 +63,7 @@ CREATE TABLE "example"."SummaryJob" (
 );
 
 -- CreateTable
-CREATE TABLE "example"."SummaryResult" (
+CREATE TABLE "public"."SummaryResult" (
     "id" TEXT NOT NULL,
     "userId" TEXT,
     "jobId" TEXT NOT NULL,
@@ -76,46 +76,46 @@ CREATE TABLE "example"."SummaryResult" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "example"."User"("email");
+CREATE UNIQUE INDEX "User_email_key" ON "public"."User"("email");
 
 -- CreateIndex
-CREATE INDEX "PromptPreset_createdAt_idx" ON "example"."PromptPreset"("createdAt");
+CREATE INDEX "PromptPreset_createdAt_idx" ON "public"."PromptPreset"("createdAt");
 
 -- CreateIndex
-CREATE INDEX "PromptPreset_name_idx" ON "example"."PromptPreset"("name");
+CREATE INDEX "PromptPreset_name_idx" ON "public"."PromptPreset"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "SummaryJob_idempotencyKey_key" ON "example"."SummaryJob"("idempotencyKey");
+CREATE UNIQUE INDEX "SummaryJob_idempotencyKey_key" ON "public"."SummaryJob"("idempotencyKey");
 
 -- CreateIndex
-CREATE INDEX "SummaryJob_status_createdAt_idx" ON "example"."SummaryJob"("status", "createdAt");
+CREATE INDEX "SummaryJob_status_createdAt_idx" ON "public"."SummaryJob"("status", "createdAt");
 
 -- CreateIndex
-CREATE INDEX "SummaryJob_userId_createdAt_idx" ON "example"."SummaryJob"("userId", "createdAt");
+CREATE INDEX "SummaryJob_userId_createdAt_idx" ON "public"."SummaryJob"("userId", "createdAt");
 
 -- CreateIndex
-CREATE INDEX "SummaryJob_presetId_idx" ON "example"."SummaryJob"("presetId");
+CREATE INDEX "SummaryJob_presetId_idx" ON "public"."SummaryJob"("presetId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "SummaryJob_userId_idempotencyKey_key" ON "example"."SummaryJob"("userId", "idempotencyKey");
+CREATE UNIQUE INDEX "SummaryJob_userId_idempotencyKey_key" ON "public"."SummaryJob"("userId", "idempotencyKey");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "SummaryResult_jobId_key" ON "example"."SummaryResult"("jobId");
+CREATE UNIQUE INDEX "SummaryResult_jobId_key" ON "public"."SummaryResult"("jobId");
 
 -- AddForeignKey
-ALTER TABLE "example"."Document" ADD CONSTRAINT "Document_userId_fkey" FOREIGN KEY ("userId") REFERENCES "example"."User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "public"."Document" ADD CONSTRAINT "Document_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "example"."PromptPreset" ADD CONSTRAINT "PromptPreset_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "example"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."PromptPreset" ADD CONSTRAINT "PromptPreset_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "example"."SummaryJob" ADD CONSTRAINT "SummaryJob_userId_fkey" FOREIGN KEY ("userId") REFERENCES "example"."User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "public"."SummaryJob" ADD CONSTRAINT "SummaryJob_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "example"."SummaryJob" ADD CONSTRAINT "SummaryJob_documentId_fkey" FOREIGN KEY ("documentId") REFERENCES "example"."Document"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."SummaryJob" ADD CONSTRAINT "SummaryJob_documentId_fkey" FOREIGN KEY ("documentId") REFERENCES "public"."Document"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "example"."SummaryJob" ADD CONSTRAINT "SummaryJob_presetId_fkey" FOREIGN KEY ("presetId") REFERENCES "example"."PromptPreset"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "public"."SummaryJob" ADD CONSTRAINT "SummaryJob_presetId_fkey" FOREIGN KEY ("presetId") REFERENCES "public"."PromptPreset"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "example"."SummaryResult" ADD CONSTRAINT "SummaryResult_jobId_fkey" FOREIGN KEY ("jobId") REFERENCES "example"."SummaryJob"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."SummaryResult" ADD CONSTRAINT "SummaryResult_jobId_fkey" FOREIGN KEY ("jobId") REFERENCES "public"."SummaryJob"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

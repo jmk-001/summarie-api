@@ -6,11 +6,11 @@ import { PrismaService } from '../prisma/prisma.service';
 export class SummaryResultService {
   constructor(private prisma: PrismaService) {}
 
-  async createForUser(userId: string, input: CreateSummaryResultInput) {
+  async createSummaryResult(userId: string, input: CreateSummaryResultInput) {
     return this.prisma.summaryResult.create({ data: { ...input, userId } });
   }
 
-  async findManyForUser(userId: string) {
+  async getSummaryResults(userId: string) {
     const result = await this.prisma.summaryResult.findMany({
       where: { userId },
     });
@@ -18,7 +18,7 @@ export class SummaryResultService {
     return result;
   }
 
-  async findForUser(userId: string, id: string) {
+  async getSummaryResultById(userId: string, id: string) {
     const result = await this.prisma.summaryResult.findUnique({
       where: { userId, id },
     });
@@ -30,7 +30,7 @@ export class SummaryResultService {
     return this.prisma.summaryResult.findUnique({ where: { id } });
   }
 
-  async deleteForUser(userId: string, id: string) {
+  async deleteSummaryResult(userId: string, id: string) {
     const deleted = await this.prisma.summaryResult.delete({
       where: { userId, id },
     });
