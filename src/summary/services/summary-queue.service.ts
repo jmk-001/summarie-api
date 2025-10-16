@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { WorkerService } from '../worker/worker.service';
-import { SUMMARY_JOB_NAME } from './summary-constants';
+import { WorkerService } from '../../worker/worker.service';
+import { SUMMARY_JOB_NAME } from '../summary-constants';
 
 @Injectable()
 export class SummaryQueueService {

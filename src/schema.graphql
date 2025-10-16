@@ -94,6 +94,10 @@ type Query {
   user(userId: String!): User
 }
 
+type Subscription {
+  processSummary(jobId: String!): SummaryResult!
+}
+
 type SummaryJob {
   attempts: Int!
   createdAt: DateTime!

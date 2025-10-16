@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { LlmOutputDto } from './dto';
+import { LlmOutputDto } from '../dto';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class SummaryLlmService {
-  async run(paramsSnapshot: Prisma.JsonValue): Promise<LlmOutputDto> {
+  async run(
+    content: string,
+    paramsSnapshot: Prisma.JsonValue,
+  ): Promise<LlmOutputDto> {
     await this.sleep(3000);
 
     const mockResult = {
-      content: 'This is a mock result content',
+      content: `[Mock Content] ${content}`,
       tokensUsed: 30,
     };
     return mockResult;

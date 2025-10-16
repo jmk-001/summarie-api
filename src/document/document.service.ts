@@ -27,6 +27,10 @@ export class DocumentService {
     return document;
   }
 
+  async findById(id: string) {
+    return await this.prisma.document.findUnique({ where: { id } });
+  }
+
   async deleteDocumentById(currentUserId: string, documentId: string) {
     const deleted = await this.prisma.document.deleteMany({
       where: { id: documentId, userId: currentUserId },

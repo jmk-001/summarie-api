@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSummaryJobInput } from './dto';
-import { SummaryQueueService } from '../summary/summary-queue.service';
+import { SummaryQueueService } from '../summary/services/summary-queue.service';
 import { UpdateSummaryJobInput } from './dto/update-summary-job.input';
 
 @Injectable()
@@ -15,7 +15,6 @@ export class SummaryJobService {
     const job = await this.prisma.summaryJob.create({
       data: { ...dto, userId },
     });
-    await this.summaryQueueService.enqueue(job.id);
     return job;
   }
 

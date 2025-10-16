@@ -1,10 +1,15 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { WorkerService } from '../worker/worker.service';
-import { SUMMARY_JOB_NAME } from './summary-constants';
-import { SummaryLlmService } from './summary-llm.service';
+import {
+  PROCESS_SUMMARY_PUB_KEY,
+  pubSub,
+  SUMMARY_JOB_NAME,
+} from './summary-constants';
+import { SummaryLlmService } from './services/summary-llm.service';
 import { SummaryJobService } from '../summary-job/summary-job.service';
 import { SummaryResultService } from '../summary-result/summary-result.service';
 import { SummaryJobStatus } from '../summary-job/models/summary-job-status.enum';
+import { DocumentService } from '../document/document.service';
 
 @Injectable()
 export class SummaryProcessor implements OnModuleInit {
@@ -12,6 +17,7 @@ export class SummaryProcessor implements OnModuleInit {
 
   constructor(
     private boss: WorkerService,
+    private documentService: DocumentService,
     private summaryJobService: SummaryJobService,
     private summaryResultService: SummaryResultService,
     private llm: SummaryLlmService,
@@ -22,6 +28,7 @@ export class SummaryProcessor implements OnModuleInit {
       const { jobId } = j.data as { jobId: string };
 
       const job = await this.summaryJobService.findById(jobId);
+      const document = await this.documentService.findById(job.documentId);
       await this.summaryJobService.updateForUser(job.userId, job.id, {
         status: SummaryJobStatus.running,
         startedAt: new Date(),
@@ -38,17 +45,27 @@ export class SummaryProcessor implements OnModuleInit {
           return;
         }
 
-        const llmOutput = await this.llm.run(job.paramsSnapshot);
+        const llmOutput = await this.llm.run(
+          document.content,
+          job.paramsSnapshot,
+        );
 
-        await this.summaryResultService.createSummaryResult(job.userId, {
-          jobId: job.id,
-          content: llmOutput.content,
-          model: job.model,
-          tokensUsed: llmOutput.tokensUsed,
-        });
+        const result = await this.summaryResultService.createSummaryResult(
+          job.userId,
+          {
+            jobId: job.id,
+            content: llmOutput.content,
+            model: job.model,
+            tokensUsed: llmOutput.tokensUsed,
+          },
+        );
         await this.summaryJobService.updateById(job.id, {
           status: SummaryJobStatus.done,
           finishedAt: new Date(),
+        });
+
+        await pubSub.publish(PROCESS_SUMMARY_PUB_KEY, {
+          processSummary: result,
         });
       } catch (e: any) {
         const errorString = e.message;

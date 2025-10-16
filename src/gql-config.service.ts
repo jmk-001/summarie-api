@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { ApolloDriverConfig } from '@nestjs/apollo';
 import { Injectable } from '@nestjs/common';
 import { GqlOptionsFactory } from '@nestjs/graphql';
+import { Context } from 'graphql-ws';
 
 @Injectable()
 export class GqlConfigService implements GqlOptionsFactory {
@@ -17,13 +18,30 @@ export class GqlConfigService implements GqlOptionsFactory {
         numberScalarMode: 'integer',
       },
       // subscription
-      installSubscriptionHandlers: true,
       includeStacktraceInErrorResponses: graphqlConfig.debug,
       playground: graphqlConfig.playgroundEnabled,
       subscriptions: {
-        'graphql-ws': true,
+        'graphql-ws': {
+          onConnect: (ctx: Context) => {
+            const raw =
+              (ctx.connectionParams as any)?.authorization ??
+              (ctx.connectionParams as any)?.Authorization;
+
+            if (typeof raw === 'string' && raw) {
+              const authorization = raw.startsWith('Bearer ')
+                ? raw
+                : `Bearer ${raw}`;
+              const extra = ctx.extra as { request: any };
+              const req = extra.request;
+              req.headers = { ...req.headers, authorization };
+            }
+          },
+        },
       },
-      context: ({ req }) => ({ req }),
+
+      context: ({ req, extra }) => {
+        return { req: req ?? extra?.request };
+      },
     };
   }
 }
