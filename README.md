@@ -1,98 +1,230 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Summarie API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Robust, type-safe GraphQL API for creating documents and generating AI summaries asynchronously. Built with NestJS, Prisma, PostgreSQL, and pg-boss, featuring JWT authentication and GraphQL subscriptions for real-time result delivery.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Features
 
-## Description
+- GraphQL API (Apollo) with code-first schema and Playground
+- JWT authentication (REST endpoints for sign-up/sign-in)
+- Document, Prompt Preset, Summary Job, and Summary Result modules
+- Asynchronous processing via pg-boss backed by PostgreSQL
+- GraphQL subscription to receive summary results in real time
+- Prisma ORM with migrations and PostgreSQL
+- Developer-friendly TypeScript project structure
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Tech Stack
 
-## Project setup
+- Node.js, TypeScript, NestJS
+- GraphQL (Apollo), `graphql-ws` for subscriptions
+- Prisma ORM, PostgreSQL
+- pg-boss job queue
+- Docker Compose (local databases)
 
-```bash
-$ npm install
+## Getting Started
+
+### Prerequisites
+
+- Node.js 20+ and npm
+- Docker Desktop (for local PostgreSQL)
+
+### Environment
+
+Create `.env` and `.env.test` files in the project root. These files are used both by Docker Compose and the app/scripts.
+
+Example `.env` (development):
+
+```
+# Postgres container config (dev)
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=postgres
+
+# Application
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres?schema=public
+JWT_SECRET=replace_with_strong_secret
+PORT=3000
 ```
 
-## Compile and run the project
+Example `.env.test` (e2e/tests):
 
-```bash
-# development
-$ npm run start
+```
+# Postgres container config (test)
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=postgres
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+# Application (note the port 5433 for test DB)
+DATABASE_URL=postgresql://postgres:postgres@localhost:5433/postgres?schema=public
+JWT_SECRET=replace_with_strong_secret_for_tests
 ```
 
-## Run tests
+### Install
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```
+npm install
 ```
 
-## Deployment
+### Start databases
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+```
+# Start dev DB and apply migrations
+npm run db:dev:restart
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Alternatively (separate steps)
+npm run db:dev:up
+npm run prisma:dev:deploy
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Run the app
 
-## Resources
+```
+# Development (watch)
+npm run start:dev
 
-Check out a few resources that may come in handy when working with NestJS:
+# Production build
+npm run build
+npm run start:prod
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+The GraphQL Playground is available at http://localhost:3000/graphql by default (configurable via `PORT`).
 
-## Support
+## Authentication
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Use the REST endpoints to obtain a JWT, then pass it to GraphQL requests.
 
-## Stay in touch
+```
+# Sign up
+curl -X POST http://localhost:3000/auth/sign-up \
+  -H "Content-Type: application/json" \
+  -d '{"email":"you@example.com","password":"StrongPassword!"}'
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# Sign in
+curl -X POST http://localhost:3000/auth/sign-in \
+  -H "Content-Type: application/json" \
+  -d '{"email":"you@example.com","password":"StrongPassword!"}'
+```
+
+Responses include `{ "accessToken": "..." }`. In GraphQL requests, set the header:
+
+```
+Authorization: Bearer <accessToken>
+```
+
+For subscriptions, pass the same token via `connectionParams` as `authorization`.
+
+## Typical Workflow (GraphQL)
+
+1) Create a document:
+
+```graphql
+mutation CreateDocument($data: CreateDocumentInput!) {
+  createDocument(data: $data) { id title createdAt }
+}
+
+# Variables
+{
+  "data": {
+    "title": "Sample",
+    "content": "Text to summarize",
+    "sourceType": "manual"
+  }
+}
+```
+
+2) Create a summary job referencing the document:
+
+```graphql
+mutation CreateSummaryJob($data: CreateSummaryJobInput!) {
+  createSummaryJob(data: $data) {
+    id
+    status
+    createdAt
+  }
+}
+
+# Variables
+{
+  "data": {
+    "documentId": "<documentId>",
+    "model": "gpt-mock",
+    "schemaVersion": 1,
+    "paramsSnapshot": { "tone": "concise" }
+  }
+}
+```
+
+3) Subscribe to the result (this also enqueues processing):
+
+```graphql
+subscription OnProcessSummary($jobId: String!) {
+  processSummary(jobId: $jobId) {
+    id
+    jobId
+    content
+    tokensUsed
+    model
+  }
+}
+```
+
+The server publishes the `SummaryResult` when processing finishes. By default, the LLM step is mocked in `src/summary/services/summary-llm.service.ts` for local development.
+
+## Scripts
+
+```
+# Databases
+npm run db:dev:up         # start dev Postgres (Docker)
+npm run db:dev:rm         # remove dev Postgres container/volumes
+npm run db:dev:restart    # remove + start + migrate (dev)
+npm run db:test:restart   # same for test DB
+
+# Prisma
+npm run prisma:dev:deploy
+npm run prisma:test:deploy
+
+# App
+npm run start             # start
+npm run start:dev         # start (watch)
+npm run start:prod        # run compiled build
+npm run build             # compile TS -> dist
+
+# Lint/format/tests
+npm run lint
+npm run format
+npm run test
+npm run test:e2e
+npm run test:cov
+```
+
+## Project Structure (selected)
+
+```
+src/
+  auth/              # JWT auth (REST), guards, strategy
+  document/          # GraphQL CRUD for documents
+  prompt-preset/     # Manage prompt presets
+  summary-job/       # Create/track summary jobs
+  summary-result/    # Persist and query results
+  summary/           # Queue, processor, subscription
+  worker/            # pg-boss setup
+  prisma/            # Prisma service
+  common/            # Config, decorators, types
+```
+
+The GraphQL schema is generated to `src/schema.graphql`.
+
+## Database & Migrations
+
+- Prisma migrations live in `prisma/migrations`.
+- Local development uses Dockerized PostgreSQL via `docker-compose.yml`.
+- The app and worker connect using `DATABASE_URL` (must be set).
+
+## Notes
+
+- The summary engine is mocked for development; replace `SummaryLlmService` with a real LLM provider when ready.
+- Subscriptions require the JWT to be provided via `connectionParams.authorization`.
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is currently provided as UNLICENSED.
+
